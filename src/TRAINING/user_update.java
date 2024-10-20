@@ -5,11 +5,25 @@
  */
 package TRAINING;
 
+import java.awt.HeadlessException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author USER
  */
 public class user_update extends javax.swing.JFrame {
+
+    Connection con;
+    Statement s;
+    ResultSet rslt;
+    PreparedStatement pst;
 
     /**
      * Creates new form user_update
@@ -31,30 +45,33 @@ public class user_update extends javax.swing.JFrame {
         NAME = new javax.swing.JTextField();
         AGE = new javax.swing.JTextField();
         GENDER = new javax.swing.JTextField();
-        UPDATE = new javax.swing.JButton();
+        btn_add_update = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         UID.setText("jLabel1");
 
-        UPDATE.setText("UPDATE");
+        btn_add_update.setText("UPDATE");
+        btn_add_update.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_add_updateActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(47, 47, 47)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(GENDER, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(AGE, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(NAME, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(UID, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(GENDER, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(AGE, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(NAME, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(UID, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addComponent(UPDATE)))
+                        .addGap(51, 51, 51)
+                        .addComponent(btn_add_update)))
                 .addContainerGap(153, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -68,14 +85,140 @@ public class user_update extends javax.swing.JFrame {
                 .addComponent(AGE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(GENDER, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
-                .addComponent(UPDATE)
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addGap(40, 40, 40)
+                .addComponent(btn_add_update)
+                .addContainerGap(53, Short.MAX_VALUE))
         );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_add_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add_updateActionPerformed
+        //  click to update
+        table_connectivity tc = new table_connectivity();
+        String ID = UID.getText();
+        String name = NAME.getText();
+        String age = AGE.getText();
+        String gender = GENDER.getText();
+
+        if ("UPDATE".equals(btn_add_update.getText())) {
+            try {
+
+                Class.forName("com.mysql.jdbc.Driver");
+                //String connect="jdbc:derby://localhost:1527/RuDonDB";
+                String connect = "jdbc:mysql://localhost/jbrposdb2";
+                con = DriverManager.getConnection(connect);
+                // JOptionPane.showMessageDialog(null,"Connec
+                String DBQ = "SELECT ID, NAME, AGE, GENDER from user";
+                s = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+                rslt = s.executeQuery(DBQ);
+                while (rslt.next()) {
+                    if (rslt.getString("ID").equals(ID)) {
+                        rslt.updateString(2, name);
+                        rslt.updateString(3, age);
+                        rslt.updateString(4, gender);
+
+                        rslt.updateRow();
+                    } else {
+
+                    }
+
+                }
+
+                JOptionPane.showMessageDialog(null, "Update Successful");
+
+                UID.setText("");
+                NAME.setText(null);
+                AGE.setText(null);
+                GENDER.setText(null);
+
+            } catch (ClassNotFoundException | SQLException | HeadlessException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            } finally {
+                // close JDBC objects
+                try {
+                    if (rslt != null) {
+                        rslt.close();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    if (s != null) {
+                        s.close();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    if (con != null) {
+                        con.close();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        } else if ("ADD".equals(btn_add_update.getText())) {
+
+            try {
+
+                Class.forName("com.mysql.jdbc.Driver");
+                //String connect="jdbc:derby://localhost:1527/RuDonDB";
+                String connect = "jdbc:mysql://localhost/jbrposdb2";
+                con = DriverManager.getConnection(connect);
+                // JOptionPane.showMessageDialog(null,"Connec
+                String DBQ = "SELECT * from user";
+                s = con.createStatement();
+                rslt = s.executeQuery(DBQ);
+
+                pst = con.prepareStatement("INSERT INTO user(NAME, AGE, GENDER)VALUES(?,?,?)");
+                while (rslt.next()) {
+
+                }
+                pst.setString(1, name);
+                pst.setString(2, age);
+                pst.setString(3, gender);
+                pst.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "Add Successful");
+
+                UID.setText("");
+                NAME.setText(null);
+                AGE.setText(null);
+                GENDER.setText(null);
+
+            } catch (ClassNotFoundException | SQLException | HeadlessException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            } finally {
+                // close JDBC objects
+                try {
+                    if (rslt != null) {
+                        rslt.close();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    if (s != null) {
+                        s.close();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+                try {
+                    if (con != null) {
+                        con.close();
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            tc.load();
+
+        }
+    }//GEN-LAST:event_btn_add_updateActionPerformed
 
     /**
      * @param args the command line arguments
@@ -117,6 +260,6 @@ public class user_update extends javax.swing.JFrame {
     public javax.swing.JTextField GENDER;
     public javax.swing.JTextField NAME;
     public javax.swing.JLabel UID;
-    private javax.swing.JButton UPDATE;
+    public javax.swing.JButton btn_add_update;
     // End of variables declaration//GEN-END:variables
 }
